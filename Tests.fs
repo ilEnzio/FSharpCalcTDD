@@ -118,6 +118,18 @@ let ``Test Calculator can divide and update state`` () =
     Assert.Equal(12., calc.State)
 
 [<Fact>]
+let ``Test Calculator can divide by zero and update state`` () = 
+
+    let calc = getUserInput calc "28"
+
+    let calc = getUserInput calc "-"
+    let calc = getUserInput calc "4"
+    let calc = getUserInput calc "/"
+    let calc = getUserInput calc "0"
+
+    Assert.Equal(0., calc.State)
+
+[<Fact>]
 let ``Test Calculator can accept equal`` () = 
 
     let calc = getUserInput calc "28"

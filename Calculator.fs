@@ -25,22 +25,7 @@ type UserInput =
     | OutOfBounds of string
     | Invalid 
 
-
-
-let performCalculation calc = 
-    // printfn "%A, %A, %A" calc.State calc.LastOp calc.LastNum
-    calc.LastOp calc.State calc.LastNum
-
-let updateState calc input  = 
-    match calc.Data.Length with
-    | 1 -> {calc with State = System.Math.Round((float input),2)}
-    |_ -> {calc with State = System.Math.Round((performCalculation calc),2)}
-
-// let isOperatorOrNumberOrEqual x =
-//     opsDict.Keys |> Seq.contains x,  System.Int32.TryParse x|> fst,  x = "="
-
-let InputType (x : string)= 
-    // let xParsed = System.Int32.TryParse x
+let determineType (x : string)= 
     let xParsed = System.Double.TryParse x
 
     match x with 
@@ -49,8 +34,24 @@ let InputType (x : string)=
     | x when xParsed |> fst  -> NumericValue x
     | x when x = "=" -> EqualOperator x 
     | x when x = "AC" -> Clear x
-
     | _ -> Invalid
+
+let performCalculation calc = 
+    // printfn "%A, %A, %A" calc.State calc.LastOp calc.LastNum
+    calc.LastOp calc.State calc.LastNum
+
+let updateState calc input  = 
+    let divisionByZero = ("/", 0.)
+
+    match calc.Data.Length with
+    | 1 -> {calc with State = System.Math.Round((float input),2)}
+    |_ -> 
+        match (calc.Data.[1], float input) = divisionByZero with 
+        | true-> printfn "ERR" ; { State = 0.; Data = []; LastNum = 0.; LastOp = fun x -> (fun x -> x)}
+        | _ -> {calc with State = System.Math.Round((performCalculation calc),2)}
+
+// let isOperatorOrNumberOrEqual x =
+//     opsDict.Keys |> Seq.contains x,  System.Int32.TryParse x|> fst,  x = "="
 
 let addData calc userInput = 
     userInput :: calc.Data
@@ -72,7 +73,7 @@ let getUserInput calc input : Calculator =
     
     let newCalc = {calc with Data = addData calc input}
 
-    match InputType input with 
+    match determineType input with 
     | OutOfBounds x -> printfn "ERR" ; calc
     | NumericValue x -> updateState {newCalc with LastNum = float input} input
     | ArithemticOperator x -> {newCalc with  LastOp = opsDict.[input]}
