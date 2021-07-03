@@ -1,7 +1,5 @@
 module Calculator
 
-// open System
-// open System.Collections.Generic
 
 type Calculator = {
     State : float
@@ -42,7 +40,6 @@ let updateState calc input  =
 //     opsDict.Keys |> Seq.contains x,  System.Int32.TryParse x|> fst,  x = "="
 
 let InputType (x : string)= 
- 
     // let xParsed = System.Int32.TryParse x
     let xParsed = System.Double.TryParse x
 

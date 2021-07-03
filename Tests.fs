@@ -44,11 +44,6 @@ type OutStr(sb:StringBuilder, orig:TextWriter) =
 let ``Test Console Menu Output is correct`` () = 
     let prompt = "You may enter a Digit or operations: +, -, /, and =, a C (for clear), and an AC (for clear all)\n"
     
-    let withOutStr' f a =
-        use out = OutStr.Create()
-        f(a)
-        out.Value
-    
     let withOutStr'' f a = 
         let out = OutStr.Create()
         f(a)
@@ -138,10 +133,11 @@ let ``Test Calculator can accept equal`` () =
     let calc = getUserInput calc "+"
     let calc = getUserInput calc "="
     let tempData' = ["+"; "28"]
-    
+    let op = (+)
+
     Assert.Equal(56., calc.State)
     Assert.Equal<string list> (tempData', calc.Data)
-    // Assert.Equal(op, calc.LastOp)  // why is this not equal?
+    Assert.Equal(op, calc.LastOp)  // why is this not equal?
 
     let calc = getUserInput calc "/"
     let calc = getUserInput calc "8"
@@ -195,7 +191,7 @@ let ``Test Calculator reject number more than 8 digits`` () =
     Assert.Equal(46., calc.State)
 
 [<Fact>]
-let ``Test Calculator can handle decimals`` () = 
+let ``Test Calculator can handle decimals up to two places`` () = 
 
     let calc = getUserInput calc "5"
     let calc = getUserInput calc "/"
