@@ -4,44 +4,55 @@ module Calculator
 // open System.Collections.Generic
 
 type Calculator = {
-    State : int
+    State : float
     Data: list<string>
-    LastNum: int
-    LastOp: int -> int -> int
-    
+    LastNum: float
+    LastOp: float -> float -> float
     }
 
 let opsDict = dict [
         "+" , (+); 
         "-", (-); 
         "/", (/); 
-        "*", (*)
-        ] 
+        "*", (*)]
+
+let calMax = 99999999.
+let calMin = -99999999.
 
 type UserInput = 
-    | Numeric of string
+    | NumericValue of string
     | ArithemticOperator of string
-    | Command of string
+    | EqualOperator of string
+    | Clear of string
+    | OutOfBounds of string
     | Invalid 
 
 
+
 let performCalculation calc = 
-    printfn "%A, %A, %A" calc.State calc.LastOp calc.LastNum
+    // printfn "%A, %A, %A" calc.State calc.LastOp calc.LastNum
     calc.LastOp calc.State calc.LastNum
 
 let updateState calc input  = 
     match calc.Data.Length with
-    | 1 -> {calc with State = int input}
-    |_ -> {calc with State = performCalculation calc}
+    | 1 -> {calc with State = System.Math.Round((float input),2)}
+    |_ -> {calc with State = System.Math.Round((performCalculation calc),2)}
 
 // let isOperatorOrNumberOrEqual x =
 //     opsDict.Keys |> Seq.contains x,  System.Int32.TryParse x|> fst,  x = "="
-   
-let InputType x = 
+
+let InputType (x : string)= 
+ 
+    // let xParsed = System.Int32.TryParse x
+    let xParsed = System.Double.TryParse x
+
     match x with 
     | x when opsDict.Keys |> Seq.contains x -> ArithemticOperator x 
-    | x when System.Int32.TryParse x|> fst -> Numeric x
-    | x when x = "=" -> Command x 
+    | x when xParsed |> snd > calMax || xParsed|> snd < calMin -> OutOfBounds x
+    | x when xParsed |> fst  -> NumericValue x
+    | x when x = "=" -> EqualOperator x 
+    | x when x = "AC" -> Clear x
+
     | _ -> Invalid
 
 let addData calc userInput = 
@@ -51,7 +62,6 @@ let promptUserMenu () =
     printf "You may enter a Digit or operations: +, -, /, and =, a C (for clear), and an AC (for clear all)\n"
 
 // let getUserInput' calc input : Calculator = 
-    
 //     let newCalc = {calc with Data = addData calc input}
 
 //     match input |> isOperatorOrNumberOrEqual with 
@@ -66,9 +76,11 @@ let getUserInput calc input : Calculator =
     let newCalc = {calc with Data = addData calc input}
 
     match InputType input with 
-    | Numeric x -> updateState {newCalc with LastNum = int input} input
+    | OutOfBounds x -> printfn "ERR" ; calc
+    | NumericValue x -> updateState {newCalc with LastNum = float input} input
     | ArithemticOperator x -> {newCalc with  LastOp = opsDict.[input]}
-    | Command x -> updateState calc (string calc.LastNum)
+    | EqualOperator x -> updateState calc (string calc.LastNum)
+    | Clear x -> { State = 0.; Data = []; LastNum = 0.; LastOp = fun x -> (fun x -> x)}
     | Invalid -> calc 
- 
+
 
