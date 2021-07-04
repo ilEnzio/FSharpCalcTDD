@@ -18,22 +18,22 @@ let calMax = 99999999.
 let calMin = -99999999.
 
 type UserInput = 
-    | NumericValue of string
-    | ArithemticOperator of string
-    | EqualOperator of string
-    | Clear of string
-    | OutOfBounds of string
+    | NumericValue 
+    | ArithemticOperator 
+    | EqualOperator 
+    | Clear 
+    | OutOfBounds 
     | Invalid 
 
 let determineType (x : string)= 
     let xParsed = System.Double.TryParse x
 
     match x with 
-    | x when opsDict.Keys |> Seq.contains x -> ArithemticOperator x 
-    | x when xParsed |> snd > calMax || xParsed|> snd < calMin -> OutOfBounds x
-    | x when xParsed |> fst  -> NumericValue x
-    | x when x = "=" -> EqualOperator x 
-    | x when x = "AC" -> Clear x
+    | x when opsDict.Keys |> Seq.contains x -> ArithemticOperator 
+    | x when xParsed |> snd > calMax || xParsed|> snd < calMin -> OutOfBounds 
+    | x when xParsed |> fst  -> NumericValue 
+    | x when x = "=" -> EqualOperator 
+    | x when x = "AC" -> Clear 
     | _ -> Invalid
 
 let performCalculation calc = 
@@ -74,11 +74,11 @@ let getUserInput calc input : Calculator =
     let newCalc = {calc with Data = addData calc input}
 
     match determineType input with 
-    | OutOfBounds x -> printfn "ERR" ; calc
-    | NumericValue x -> updateState {newCalc with LastNum = float input} input
-    | ArithemticOperator x -> {newCalc with  LastOp = opsDict.[input]}
-    | EqualOperator x -> updateState calc (string calc.LastNum)
-    | Clear x -> { State = 0.; Data = []; LastNum = 0.; LastOp = fun x -> (fun x -> x)}
+    | OutOfBounds  -> printfn "ERR" ; calc
+    | NumericValue  -> updateState {newCalc with LastNum = float input} input
+    | ArithemticOperator -> {newCalc with  LastOp = opsDict.[input]}
+    | EqualOperator -> updateState calc (string calc.LastNum)
+    | Clear -> { State = 0.; Data = []; LastNum = 0.; LastOp = fun x -> (fun x -> x)}
     | Invalid -> calc 
 
 
