@@ -17,24 +17,18 @@ let opsDict = dict [
 let calMax = 99999999.
 let calMin = -99999999.
 
-type UserInput = 
-    | NumericValue 
-    | ArithemticOperator 
-    | EqualOperator 
-    | Clear 
-    | OutOfBounds 
-    | Invalid 
+let (|Number|Operator|EqualSign|ClearAll|OutOfBounds|Invalid|) (x: string) = 
 
-let determineType (x : string)= 
     let xParsed = System.Double.TryParse x
 
     match x with 
-    | x when opsDict.Keys |> Seq.contains x -> ArithemticOperator 
     | x when xParsed |> snd > calMax || xParsed|> snd < calMin -> OutOfBounds 
-    | x when xParsed |> fst  -> NumericValue 
-    | x when x = "=" -> EqualOperator 
-    | x when x = "AC" -> Clear 
+    | x when xParsed |> fst  -> Number 
+    | x when opsDict.Keys |> Seq.contains x -> Operator 
+    | x when x = "=" -> EqualSign 
+    | x when x = "AC" -> ClearAll 
     | _ -> Invalid
+
 
 let performCalculation calc = 
     // printfn "%A, %A, %A" calc.State calc.LastOp calc.LastNum
@@ -69,16 +63,15 @@ let promptUserMenu () =
 //     | _ -> calc
 
 
-let getUserInput calc input : Calculator = 
+let processUserInput calc input : Calculator = 
     
     let newCalc = {calc with Data = addData calc input}
 
-    match determineType input with 
-    | OutOfBounds  -> printfn "ERR" ; calc
-    | NumericValue  -> updateState {newCalc with LastNum = float input} input
-    | ArithemticOperator -> {newCalc with  LastOp = opsDict.[input]}
-    | EqualOperator -> updateState calc (string calc.LastNum)
-    | Clear -> { State = 0.; Data = []; LastNum = 0.; LastOp = fun x -> (fun x -> x)}
-    | Invalid -> calc 
-
+    match input with
+    | OutOfBounds  -> printfn "ERR"; calc
+    | Number -> updateState {newCalc with LastNum = float input} input
+    | Operator -> {newCalc with  LastOp = opsDict.[input]}
+    | EqualSign -> updateState calc (string calc.LastNum)
+    | ClearAll -> { State = 0.; Data = []; LastNum = 0.; LastOp = fun x -> (fun x -> x)}
+    |  _ -> calc 
 

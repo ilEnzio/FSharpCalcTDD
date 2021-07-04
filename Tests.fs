@@ -62,12 +62,12 @@ let ``Test Calculator can have a numerical state`` () =
 [<Fact>]
 let ``Test Calculator only stores appropriate input`` () = 
 
-    let calc = getUserInput calc "3"
-    let calc = getUserInput calc "5"
-    let calc = getUserInput calc "7"
-    let calc = getUserInput calc "+"
-    let calc = getUserInput calc "t"
-    let calc = getUserInput calc "888"
+    let calc = processUserInput calc "3"
+    let calc = processUserInput calc "5"
+    let calc = processUserInput calc "7"
+    let calc = processUserInput calc "+"
+    let calc = processUserInput calc "t"
+    let calc = processUserInput calc "888"
     
     let testInput = ["888"; "+"; "7"; "5";"3" ]
     
@@ -75,66 +75,66 @@ let ``Test Calculator only stores appropriate input`` () =
 
 [<Fact>]
 let ``Test Calculator can add and update state`` () = 
-    let calc = getUserInput calc "28"
+    let calc = processUserInput calc "28"
 
     Assert.Equal(28., calc.State)
 
-    let calc = getUserInput calc "+"
-    let calc = getUserInput calc "4"
+    let calc = processUserInput calc "+"
+    let calc = processUserInput calc "4"
 
     Assert.Equal(32., calc.State)
 
 [<Fact>]
 let ``Calculator can subtract and update state`` () = 
-    let calc = getUserInput calc "28"
+    let calc = processUserInput calc "28"
 
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "4"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "4"
 
     Assert.Equal(24., calc.State)
 
 [<Fact>]
 let ``Test Calculator can multiple and update state`` () = 
-    let calc = getUserInput calc "28"
+    let calc = processUserInput calc "28"
 
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "4"
-    let calc = getUserInput calc "*"
-    let calc = getUserInput calc "2"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "4"
+    let calc = processUserInput calc "*"
+    let calc = processUserInput calc "2"
 
     Assert.Equal(48., calc.State)
 
 [<Fact>]
 let ``Test Calculator can divide and update state`` () = 
-    let calc = getUserInput calc "28"
+    let calc = processUserInput calc "28"
 
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "4"
-    let calc = getUserInput calc "*"
-    let calc = getUserInput calc "2"
-    let calc = getUserInput calc "/"
-    let calc = getUserInput calc "4"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "4"
+    let calc = processUserInput calc "*"
+    let calc = processUserInput calc "2"
+    let calc = processUserInput calc "/"
+    let calc = processUserInput calc "4"
 
     Assert.Equal(12., calc.State)
 
 [<Fact>]
 let ``Test Calculator can divide by zero and update state`` () = 
 
-    let calc = getUserInput calc "28"
+    let calc = processUserInput calc "28"
 
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "4"
-    let calc = getUserInput calc "/"
-    let calc = getUserInput calc "0"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "4"
+    let calc = processUserInput calc "/"
+    let calc = processUserInput calc "0"
 
     Assert.Equal(0., calc.State)
 
 [<Fact>]
 let ``Test Calculator can accept equal`` () = 
 
-    let calc = getUserInput calc "28"
-    let calc = getUserInput calc "="
-    let calc = getUserInput calc "="
+    let calc = processUserInput calc "28"
+    let calc = processUserInput calc "="
+    let calc = processUserInput calc "="
 
     let tempData = ["28"]
     
@@ -142,8 +142,8 @@ let ``Test Calculator can accept equal`` () =
     Assert.Equal<string list> (tempData, calc.Data)
 
 
-    let calc = getUserInput calc "+"
-    let calc = getUserInput calc "="
+    let calc = processUserInput calc "+"
+    let calc = processUserInput calc "="
     let tempData' = ["+"; "28"]
     // let op = (+)
 
@@ -151,8 +151,8 @@ let ``Test Calculator can accept equal`` () =
     Assert.Equal<string list> (tempData', calc.Data)
     // Assert.Equal(op, calc.LastOp)  // why is this not equal?
 
-    let calc = getUserInput calc "/"
-    let calc = getUserInput calc "8"
+    let calc = processUserInput calc "/"
+    let calc = processUserInput calc "8"
     let tempData'' = ["8"; "/"; "+"; "28"]
     
     Assert.Equal(7., calc.State)
@@ -162,18 +162,18 @@ let ``Test Calculator can accept equal`` () =
 let ``Test Calculator can accept AC and resets Calculator`` () = 
 
 
-    let calc = getUserInput calc "28"
+    let calc = processUserInput calc "28"
 
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "4"
-    let calc = getUserInput calc "*"
-    let calc = getUserInput calc "2"
-    let calc = getUserInput calc "/"
-    let calc = getUserInput calc "4"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "4"
+    let calc = processUserInput calc "*"
+    let calc = processUserInput calc "2"
+    let calc = processUserInput calc "/"
+    let calc = processUserInput calc "4"
 
     Assert.Equal(12., calc.State)
 
-    let calc = getUserInput calc "AC"
+    let calc = processUserInput calc "AC"
 
     Assert.Equal(0., calc.State)
     Assert.Equal<string list> ([], calc.Data)
@@ -181,37 +181,37 @@ let ``Test Calculator can accept AC and resets Calculator`` () =
 [<Fact>]
 let ``Test Calculator reject number more than 8 digits`` () = 
 
-    let calc = getUserInput calc "100_000_000"
+    let calc = processUserInput calc "100_000_000"
 
     Assert.Equal(0., calc.State)
 
-    let calc = getUserInput calc "28"
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "4"
-    let calc = getUserInput calc "*"
-    let calc = getUserInput calc "2"
+    let calc = processUserInput calc "28"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "4"
+    let calc = processUserInput calc "*"
+    let calc = processUserInput calc "2"
 
     Assert.Equal(48., calc.State)
 
-    let calc = getUserInput calc "-"
-    let calc = getUserInput calc "105000000"
+    let calc = processUserInput calc "-"
+    let calc = processUserInput calc "105000000"
 
     Assert.Equal(48., calc.State)
 
-    let calc = getUserInput calc "2"
+    let calc = processUserInput calc "2"
 
     Assert.Equal(46., calc.State)
 
 [<Fact>]
 let ``Test Calculator can handle decimals up to two places`` () = 
 
-    let calc = getUserInput calc "5"
-    let calc = getUserInput calc "/"
-    let calc = getUserInput calc "2"
+    let calc = processUserInput calc "5"
+    let calc = processUserInput calc "/"
+    let calc = processUserInput calc "2"
 
     Assert.Equal(2.5, calc.State)
 
-    let calc = getUserInput calc "*"
-    let calc = getUserInput calc "2.28"
+    let calc = processUserInput calc "*"
+    let calc = processUserInput calc "2.28"
 
     Assert.Equal(5.7, calc.State)
